@@ -8,10 +8,12 @@ load_dotenv()
 client = Anthropic(api_key=os.getenv('ANTHROPIC_API_KEY')) # setting up the API key for the Anthropic client
 
 def run_chat():
-    
+    # print("Type a short description of your Assistant's personality: ", end="", flush=True)
+    system_message = input()
+
+
     print('You: (type exit to quit)')
-    '''system_message = "Your name is Alex. You are a helpful and friendly assistant who helps students learn about technology and computer science. You explain things clearly and always encourage curiosity."'''
-    system_message = input("Type a short description of your Assistant's personality: ") # allouwing the user to set the assistant's personality
+    system_message = "Your name is Tal, you are a helful coding debugger, answer brifely and be focus on the bug, it's cause and how to solve it. You start you response with explaining the bug and then you give him possible solutions. Never say something you don't know and present it as true info. Answer only q's about debbuging and code, don't answer other questions."
     history = []
     message_num = 1
     while True:
@@ -27,6 +29,7 @@ def run_chat():
         history.append({'role': 'user', 'content': user_input})
        
         message_num += 1 # Counting the number of messages in the conversation
+        print(history)
 
         response = client.messages.create(   #API call and setting the parameters for the response
             model='claude-haiku-4-5-20251001',
@@ -35,34 +38,23 @@ def run_chat():
             system=system_message,
             messages=history
         )
-
+        print(response)
+        
         reply = response.content[0].text
         print(f'Assistant: {reply}')
         history.append({'role': 'assistant', 'content': reply})
 
 run_chat()
 
-
 '''
-## Reflection: ##
-Imagine making a pasta, and becuase you suck at cooking like me, you have to buy a pasta sauce fro the store, so it will taste good.
-Your code is the pasta, that you make, and the API is the sauce - something from outside that makes your pasta, code, taste better.
-
-I had no bugs today (except of the wrong API key...), so I will look into a line of code I wasn't sure about: "message_num = 1" 
-I was struggling with this because I kept getting an error that said "message_num is not defined" and that is when
-I understood that I had to define it before the while loop, so that it would be defined when I called it in the input function.
+An analogy for tokens pricing that adds up, is like when you are weighing tometos in a grocery store, everytime
+you add another tomato and the price goes up, the more tomatoes you add the more expensive it gets. the same goes for tokens, the more tokens you use the more expensive it gets.
 
 
-My guess if I remove line 39:
-I guess that if I remove this one the program will continue running until we reach line 40, were it is going
-to crash because reply is not defined.
+My prediction if i would delete this line: history.append({'role': 'user', 'content': user_input}) - it will lower the cost of input tokens becuase
+right now it is adding everytime the whole history what is causing the input tokens to be more expensive, if i delete this line it will only send 
+the current user input and not the whole history, which will lower the cost of input tokens. but it will also make the assistant 
+forget what was said before and it will not be able to answer questions about previous messages.
 
-
-Now I will try:
-NameError: name 'reply' is not defined. Did you mean: 'repr'?   
-
-
-It is intresting because it seems that python thinks that this is just a variable I spelled wrong, but actually it is just not
-defined... 
-What I learned: sometimes python does wrong assumptions when it comes to error messages.
-'''
+One bug i had was an an error that said that i passed the limits of the model, it was because
+some people used by mistake the wrong model, that caused to pass the amount of tokens availble.'''
