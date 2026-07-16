@@ -71,7 +71,4 @@ it did happen
 bug check: I didn't see any bugs, but one challenging line was the summary bonus - i was afraid it would not work, because it is a diffrent
 API call.
 
-
-
-
 '''
